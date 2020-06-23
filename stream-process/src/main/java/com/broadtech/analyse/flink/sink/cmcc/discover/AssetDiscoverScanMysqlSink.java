@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.broadtech.analyse.constants.asset.AssetFindConstant;
 import com.broadtech.analyse.pojo.cmcc.find.AssetFindScan;
 import com.broadtech.analyse.util.KafkaUtils;
+import com.broadtech.analyse.util.TimeUtils;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
@@ -102,7 +103,13 @@ public class AssetDiscoverScanMysqlSink extends RichSinkFunction<List<AssetFindS
         for (AssetFindScan scan : logins) {
             addBatch(scan);
             //send kafka message
-            ProducerRecord<String, String> record = new ProducerRecord<>(topic, scan.getTaskID() + "_" + System.currentTimeMillis());
+            long timestamp;
+            try {
+                timestamp = TimeUtils.getTimestamp("yyyy-MM-dd HH:mm:ss", scan.getScanTime());
+            }catch (Exception e){
+                timestamp = System.currentTimeMillis();
+            }
+            ProducerRecord<String, String> record = new ProducerRecord<>(topic, scan.getTaskID() + "_" + timestamp);
             producer.send(record);
         }
         try {

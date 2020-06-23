@@ -12,7 +12,7 @@ import java.time.temporal.TemporalAccessor;
  */
 public class TimeUtils {
     public static long getTimestamp(String pattern, String time){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         TemporalAccessor parse = formatter.parse(time);
         long timestamp = LocalDateTime.from(parse).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         return timestamp;

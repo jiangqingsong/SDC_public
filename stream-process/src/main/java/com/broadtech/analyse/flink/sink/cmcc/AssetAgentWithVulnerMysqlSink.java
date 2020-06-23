@@ -3,6 +3,7 @@ package com.broadtech.analyse.flink.sink.cmcc;
 import com.alibaba.fastjson.JSON;
 import com.broadtech.analyse.pojo.cmcc.AssetAgentOrigin;
 import com.broadtech.analyse.util.KafkaUtils;
+import com.broadtech.analyse.util.TimeUtils;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -121,7 +122,14 @@ public class AssetAgentWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<
         for (Tuple2<AssetAgentOrigin, String> tuple : tuples) {
             addBatch(tuple);
             //send kafka message
-            ProducerRecord<String, String> record = new ProducerRecord<>(topic, tuple.f0.getTaskID() + "_" + System.currentTimeMillis());
+            String scanTime = tuple.f0.getScanTime();
+            long timestamp;
+            try {
+                timestamp = TimeUtils.getTimestamp("yyyy-MM-dd HH:mm:ss", scanTime);
+            }catch (Exception e){
+                timestamp = System.currentTimeMillis();
+            }
+            ProducerRecord<String, String> record = new ProducerRecord<>(topic, tuple.f0.getTaskID() + "_" + timestamp);
             producer.send(record);
         }
         try {

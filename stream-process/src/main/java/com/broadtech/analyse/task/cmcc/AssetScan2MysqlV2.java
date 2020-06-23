@@ -9,6 +9,7 @@ import com.broadtech.analyse.flink.function.cmcc.ScanWithVulnerabilityProcessFun
 import com.broadtech.analyse.flink.sink.cmcc.AssetScanWithLabelMysqlSink;
 import com.broadtech.analyse.flink.sink.cmcc.AssetScanWithVulnerMysqlSink;
 import com.broadtech.analyse.pojo.cmcc.*;
+import com.broadtech.analyse.util.TimeUtils;
 import com.broadtech.analyse.util.czip.IpLocation;
 import com.broadtech.analyse.util.czip.Location;
 import com.broadtech.analyse.util.env.FlinkUtils;
@@ -184,7 +185,13 @@ public class AssetScan2MysqlV2 {
                         //send kafka
                         LOG.info(taskId + "扫描完成!");
                         //send kafka message
-                        ProducerRecord<String, String> record = new ProducerRecord<>(topic, taskId + "_" + System.currentTimeMillis());
+                        long timestamp;
+                        try {
+                            timestamp = TimeUtils.getTimestamp("yyyy-MM-dd HH:mm:ss", scanTime);
+                        }catch (Exception e){
+                            timestamp = System.currentTimeMillis();
+                        }
+                        ProducerRecord<String, String> record = new ProducerRecord<>(topic, taskId + "_" + timestamp);
                         producer.send(record);
                         //清楚该taskid的状态
                         Map<String, Integer> map = completedCountMapState.value();

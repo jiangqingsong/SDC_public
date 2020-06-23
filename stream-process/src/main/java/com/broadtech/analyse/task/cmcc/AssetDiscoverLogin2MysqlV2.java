@@ -9,6 +9,7 @@ import com.broadtech.analyse.constants.asset.AssetFindConstant;
 import com.broadtech.analyse.flink.deserialization.CustomJSONDeserializationSchema;
 import com.broadtech.analyse.flink.sink.cmcc.discover.AssetDiscoverLoginMysqlSink;
 import com.broadtech.analyse.pojo.cmcc.find.*;
+import com.broadtech.analyse.util.TimeUtils;
 import com.broadtech.analyse.util.env.FlinkUtils;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -136,7 +137,13 @@ public class AssetDiscoverLogin2MysqlV2 {
                 String isEnd = o.get(AssetFindConstant.IS_END).toString();
                 if("true".equals(isEnd)){
                     //返回结束标志
-                    ProducerRecord<String, String> record = new ProducerRecord<>(topic, taskId + "_" + System.currentTimeMillis());
+                    long timestamp;
+                    try {
+                        timestamp = TimeUtils.getTimestamp("yyyy-MM-dd HH:mm:ss", scanTime);
+                    }catch (Exception e){
+                        timestamp = System.currentTimeMillis();
+                    }
+                    ProducerRecord<String, String> record = new ProducerRecord<>(topic, taskId + "_" + timestamp);
                     producer.send(record);
                 }
 
