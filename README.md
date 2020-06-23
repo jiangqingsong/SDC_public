@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SDCPlatform
 
 总共包含以下几个模块：
