@@ -135,6 +135,7 @@ public class ScanWithLabelProcessFun extends ProcessFunction<AssetScanOrigin, Tu
 
             Set<Tuple3<Integer, String, String>> matchedLabels = matchLabel(labelInputInfo);
 
+            boolean isSwitchOrRoute = false;
             if(matchedLabels.size() == 0){
                 out.collect(Tuple2.of(scan, Tuple3.of("", "", "")));
             }else {
@@ -148,17 +149,19 @@ public class ScanWithLabelProcessFun extends ProcessFunction<AssetScanOrigin, Tu
                     type2List.add(label.f2);
                     //如果是资产发现下发的扫描任务且标签为交换机或者路由器，就发kafka
                     if(label.f0 == 2 || label.f0 == 3){
-                        //send kafka message
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("TaskID", taskID);
-                        jsonObject.put("IPAddress", scan.getDeviceIPAddress());
-                        if(ScanCollectConstant.RESOURCE_NAME_TAG.equals(scan.getResourceName())){
-                            ProducerRecord<String, String> record = new ProducerRecord<>(topic, jsonObject.toJSONString());
-                            producer.send(record);
-                            LOG.info("标签匹配" + scan.getDeviceIPAddress() + "为交换机/路由器！");
-                        }
+                        isSwitchOrRoute = true;
                     }
-
+                }
+                if(isSwitchOrRoute){
+                    //send kafka message
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("TaskID", taskID);
+                    jsonObject.put("IPAddress", scan.getDeviceIPAddress());
+                    if(ScanCollectConstant.RESOURCE_NAME_TAG.equals(scan.getResourceName())){
+                        ProducerRecord<String, String> record = new ProducerRecord<>(topic, jsonObject.toJSONString());
+                        producer.send(record);
+                        LOG.info("标签匹配" + scan.getDeviceIPAddress() + "为交换机/路由器！");
+                    }
                 }
                 out.collect(Tuple2.of(scan, Tuple3.of(StringUtils.join(labelIds, separator), StringUtils.join(type1List, separator), StringUtils.join(type2List, separator))));
             }
