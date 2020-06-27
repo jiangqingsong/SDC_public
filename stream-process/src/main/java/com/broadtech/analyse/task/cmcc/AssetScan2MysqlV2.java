@@ -24,6 +24,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -43,6 +44,7 @@ import java.util.*;
  */
 public class AssetScan2MysqlV2 {
     private static Logger LOG = Logger.getLogger(AssetScan2MysqlV2.class);
+
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
         String propPath = parameterTool.get("conf_path");
@@ -81,7 +83,6 @@ public class AssetScan2MysqlV2 {
 
         SingleOutputStreamOperator<AssetScanOrigin> json2agentStream
                 = jsonedAgentStream.keyBy(x -> "1").process(new Json2ScanProcess(producerBrokers, completedTopic, discoverTopic, locationPath));
-
         //关联标签库
         SingleOutputStreamOperator<Tuple2<AssetScanOrigin, Tuple3<String, String, String>>> labelProcessedStream
                 = json2agentStream.process(new ScanWithLabelProcessFun(producerBrokers, discoverTopic, jdbcUrl, userName, password));
@@ -117,7 +118,7 @@ public class AssetScan2MysqlV2 {
     /**
      * json转Scan对象
      */
-    public static class Json2ScanProcess extends ProcessFunction<ObjectNode, AssetScanOrigin>{
+    public static class Json2ScanProcess extends ProcessFunction<ObjectNode, AssetScanOrigin> {
         private transient ValueState<Map<String, Integer>> completedCountMapState;
         private static Logger LOG = Logger.getLogger(AssetScan2MysqlV2.class);
         private String broker;
@@ -127,6 +128,7 @@ public class AssetScan2MysqlV2 {
         private String locationPath;
 
         private IpLocation ipLocation;
+
         public Json2ScanProcess(String broker, String topic, String isEndTopic, String locationPath) {
             this.broker = broker;
             this.topic = topic;
@@ -142,8 +144,8 @@ public class AssetScan2MysqlV2 {
             super.open(parameters);
             Properties properties = new Properties();
             properties.setProperty("bootstrap.servers", broker);
-            properties.setProperty("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
-            properties.setProperty("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
+            properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+            properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
             producer = new KafkaProducer<>(properties);
 
             //ip归属
@@ -161,44 +163,46 @@ public class AssetScan2MysqlV2 {
                 JSONObject resourceObj = JSON.parseObject(o.get(ScanCollectConstant.RESOURCE_INFO).toString());
 
 
-                if(resourceObj.size() == 0){
+                if (resourceObj.size() == 0) {
                     //下发login资产发现结束标志
-                    if(ScanCollectConstant.RESOURCE_NAME_TAG.equals(resourceName)){
+                    if (ScanCollectConstant.RESOURCE_NAME_TAG.equals(resourceName)) {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("TaskID", taskId);
                         jsonObject.put("IPAddress", "");
                         jsonObject.put("IsEnd", "true");
                         ProducerRecord<String, String> record = new ProducerRecord<>(isEndTopic, jsonObject.toJSONString());
                         producer.send(record);
-                    }
-                    int count = 1;
-                    Map<String, Integer> countMap = completedCountMapState.value();
-                    if(countMap == null){
-                        countMap = new HashMap<>();
-                    }
-                    if(countMap.containsKey(taskId)){
-                        count = countMap.get(taskId) + 1;
-                    }
-                    countMap.put(taskId, count);
-                    completedCountMapState.update(countMap);
-                    if(count == 3){
-                        //send kafka
-                        LOG.info(taskId + "扫描完成!");
-                        //send kafka message
-                        long timestamp;
-                        try {
-                            timestamp = TimeUtils.getTimestamp("yyyy-MM-dd HH:mm:ss", scanTime);
-                        }catch (Exception e){
-                            timestamp = System.currentTimeMillis();
+                    } else {
+                        //前端下发任务发现结束标志
+                        int count = 1;
+                        Map<String, Integer> countMap = completedCountMapState.value();
+                        if (countMap == null) {
+                            countMap = new HashMap<>();
                         }
-                        ProducerRecord<String, String> record = new ProducerRecord<>(topic, taskId + "_" + timestamp);
-                        producer.send(record);
-                        //清楚该taskid的状态
-                        Map<String, Integer> map = completedCountMapState.value();
-                        map.remove(taskId);
-                        completedCountMapState.update(map);
+                        if (countMap.containsKey(taskId)) {
+                            count = countMap.get(taskId) + 1;
+                        }
+                        countMap.put(taskId, count);
+                        completedCountMapState.update(countMap);
+                        if (count == 3) {
+                            //send kafka
+                            LOG.info(taskId + "扫描完成!");
+                            //send kafka message
+                            long timestamp;
+                            try {
+                                timestamp = TimeUtils.getTimestamp("yyyy-MM-dd HH:mm:ss", scanTime);
+                            } catch (Exception e) {
+                                timestamp = System.currentTimeMillis();
+                            }
+                            ProducerRecord<String, String> record = new ProducerRecord<>(topic, taskId + "_" + timestamp);
+                            producer.send(record);
+                            //清楚该taskid的状态
+                            Map<String, Integer> map = completedCountMapState.value();
+                            map.remove(taskId);
+                            completedCountMapState.update(map);
+                        }
                     }
-                }else {
+                } else {
                     //deviceIpAddress
                     String deviceIpAddress = resourceObj.get(ScanCollectConstant.DEVICE_IP_ADDRESS).toString();
                     String ipAddressOwnership = resourceObj.get(ScanCollectConstant.IP_ADDRESS_OWNERSHIP).toString();
@@ -221,7 +225,7 @@ public class AssetScan2MysqlV2 {
                     try {
                         Location location = ipLocation.fetchIPLocation(deviceIpAddress.trim());
                         province = location.country;
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         LOG.error(e.getMessage(), e);
                     }
                     AssetScanOrigin scan = new AssetScanOrigin();
@@ -240,7 +244,7 @@ public class AssetScan2MysqlV2 {
                     scan.setRuning(running);
                     out.collect(scan);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 LOG.error(e.getMessage(), e);
             }
         }
