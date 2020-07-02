@@ -1,0 +1,40 @@
+CREATE TABLE IF NOT EXISTS sdc_detail.ppe_dpilog(
+    taskid string,
+    srciptype string,
+    dstiptype string,
+    trproto string,
+    protocol string,
+    srcport string,
+    dstport string,
+    starttime string,
+    endtime string,
+    utraffic string,
+    dtraffic string,
+    upacktes string,
+    dpackets string,
+    srcip string,
+    dstip string,
+    devname string,
+    softname string,
+    softver string,
+    vendor string,
+    os string,
+    osver string,
+    number string,
+    title string,
+    serverity string,
+    products string,
+    isevent string,
+    submittime string,
+    opentime string,
+    discoverername string,
+    formalway string,
+    description string,
+    patchname string,
+    patchdescription string
+)
+PARTITIONED BY(day int, minute string)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS PARQUET
+;

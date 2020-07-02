@@ -1,0 +1,24 @@
+CREATE TABLE IF NOT EXISTS sdc_detail.security_alarm_tmp(
+    event_title string,
+    event_type string,
+    event_level string,
+    event_time string,
+    alert_count string,
+    event_dev_ip string,
+    event_dev_type string,
+    event_source_ip string,
+    event_source_port string,
+    event_target_ip string,
+    event_target_port string,
+    event_affected_dev string,
+    event_description string,
+    source_iphplace string,
+    dest_iphplace string
+)
+PARTITIONED BY(day int, minute string)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS textfile
+;
+
+#load data local inpath '/home/brd/jqs/data/offline_data/security_alarm.txt' overwrite into table sdc_detail.security_alarm_tmp partition(day=20190927,minute='1300')
