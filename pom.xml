@@ -22,6 +22,8 @@
         <module>stream-process</module>
         <module>stream-etl</module>
         <module>SyslogTest</module>
+        <module>SituationAwareness</module>
+        <module>common</module>
     </modules>
 
 
