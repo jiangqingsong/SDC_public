@@ -47,9 +47,9 @@ public class AssetScan2MysqlV2 {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
-        String propPath = parameterTool.get("conf_path");
+        //String propPath = parameterTool.get("conf_path");
         //获取配置数据
-        //String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_scan_cfg.properties";
+        String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_scan_cfg.properties";
         ParameterTool paramFromProps = ParameterTool.fromPropertiesFile(propPath);
         String consumerTopic = paramFromProps.get("consumer.topic");
         String completedTopic = paramFromProps.get("producer.completed.topic");
@@ -68,7 +68,7 @@ public class AssetScan2MysqlV2 {
         env.setParallelism(1);
 
         //从kafka读取Agent数据
-        DataStream<ObjectNode> kafkaStream = FlinkUtils.createKafkaStream(false, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
+        DataStream<ObjectNode> kafkaStream = FlinkUtils.createKafkaStream(true, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
         //把json格式的数据放入侧输出流
         final OutputTag<ObjectNode> jsonFormatTag = new OutputTag<ObjectNode>("JsonFormat") {
         };

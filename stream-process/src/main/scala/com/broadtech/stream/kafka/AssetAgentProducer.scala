@@ -13,12 +13,12 @@ import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
 object AssetAgentProducer {
   def main(args: Array[String]): Unit = {
-    writeToKafka("asset_collect_login")
+    writeToKafka("test002")
   }
 
   def writeToKafka(topic: String): Unit = {
     val properties = new Properties()
-    properties.setProperty("bootstrap.servers", "master02:9092")
+    properties.setProperty("bootstrap.servers", "master01:9092")
     properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
     properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
@@ -33,7 +33,7 @@ object AssetAgentProducer {
         println(line)
         producer.send(record)
       }
-      Thread.sleep(1000)
+      Thread.sleep(5000)
     }
 
     producer.close()

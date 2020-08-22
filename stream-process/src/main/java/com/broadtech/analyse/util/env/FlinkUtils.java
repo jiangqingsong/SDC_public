@@ -45,8 +45,10 @@ public class FlinkUtils {
         return env;
     }
 
+
     /**
-     * Flink 从 Kafka 中读取数据(满足Exactly-Once)
+     *
+     * @param isEarliest kafka是否从最早offset消费
      * @param parameters
      * @param topics
      * @param groupId

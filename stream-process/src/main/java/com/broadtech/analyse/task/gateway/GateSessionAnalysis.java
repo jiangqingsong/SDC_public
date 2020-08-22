@@ -45,7 +45,7 @@ public class GateSessionAnalysis {
     private final static String KAFKA_TOPIC = "kafka.topic";
     private final static String KAFKA_GROUP_ID = "kafka.groupId";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         InputStream inputStream = TrafficAnalyse.class.getResourceAsStream("/asset_discover_login_cfg.properties");
 
         Properties prop = new Properties();
@@ -108,5 +108,7 @@ public class GateSessionAnalysis {
                 return value.getWindowEnd();//以一天为window，后面process可以收集到一天总的流量
             }
         }).process(new AppTypeRateProcessFn());
+
+        env.execute("Gateway session analysis.");
     }
 }

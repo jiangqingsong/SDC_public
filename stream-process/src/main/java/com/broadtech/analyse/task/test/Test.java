@@ -21,13 +21,39 @@ import java.util.*;
  * @date 2020-05-06 17:32
  */
 public class Test {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        A aa = new A();
+        aa.setName("AA");
+        String s = JSON.toJSONString(aa);
+        System.out.println(s);
+    }
+}
 
-        String time = "2020-06-23 14:15:26";
-        long timestamp = TimeUtils.getTimestamp("yyyy-MM-dd HH:mm:ss", time);
-        System.out.println(timestamp);
+class A{
+    public String name;
+    public String value = "";
 
-        List<String> list = Arrays.asList("127.0.0.1", "localhost", "192.168.5.93");
+    public A() {
+    }
 
+    public A(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }
