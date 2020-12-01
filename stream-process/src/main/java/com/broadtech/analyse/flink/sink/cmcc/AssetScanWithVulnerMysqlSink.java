@@ -1,8 +1,10 @@
 package com.broadtech.analyse.flink.sink.cmcc;
 
 import com.alibaba.fastjson.JSON;
+import com.broadtech.analyse.constants.asset.AssetConstants;
 import com.broadtech.analyse.constants.asset.ScanCollectConstant;
 import com.broadtech.analyse.pojo.cmcc.AssetScanOrigin;
+import com.broadtech.analyse.util.TimeUtils;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -15,7 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Agent采集资产数据mysql
  * @date 2020-05-28 15:37
  */
@@ -41,14 +43,6 @@ public class AssetScanWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<A
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
-        /*dataSource = new BasicDataSource();
-        connection = getCon(dataSource);
-        String sql = "insert into  " + ScanCollectConstant.TAB_NAME_VULNERABILITY + "(resource_name,task_id," +
-                "scan_time,device_ip_address,ip_address_ownership,device_type,os_info,system_fingerprint_info," +
-                "open_service_of_port,message_oriented_middleware,data_base_info,running," +
-                "vulnerability_number)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?);";
-        ps = this.connection.prepareStatement(sql);*/
     }
 
     @Override
@@ -66,21 +60,16 @@ public class AssetScanWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<A
     public void addBatch(Tuple2<AssetScanOrigin, String> tuple) throws SQLException {
         AssetScanOrigin scan = tuple.f0;
         String number = tuple.f1;
-        ps.setString(1, scan.getResourceName());
-        ps.setString(2, scan.getTaskID());
-        ps.setString(3, scan.getScanTime());
-        ps.setString(4, scan.getDeviceIPAddress());
-        ps.setString(5, scan.getIPAddressOwnership());
-        ps.setString(6, scan.getDeviceType());
-        ps.setString(7, scan.getOSInfo());//String
-        ps.setString(8, scan.getSystemFingerprintInfo());
-        ps.setString(9, JSON.toJSONString(scan.getOpenServiceOfPort()));//String
-        ps.setString(10, JSON.toJSONString(scan.getMessageOrientedMiddleware()));
-        ps.setString(11, JSON.toJSONString(scan.getDataBaseInfos()));//Integer
-        ps.setString(12, scan.getRuning());
-        //number
-        ps.setString(13, number);
-        ps.addBatch();
+        String[] numbers = number.split(",");
+        for(int i=0; i<numbers.length; i++){
+            ps.setString(1, scan.getDeviceIPAddress());
+            ps.setString(2, numbers[i]);
+            ps.setString(3, "");//没有绿盟的漏洞信息
+            ps.setInt(4, 1);//1代表漏洞来源CNVD
+            ps.setString(5, TimeUtils.convertTimestamp2Date(System.currentTimeMillis(), "yyyy-MM-dd hh:mm:ss"));//1代表漏洞来源CNVD
+            ps.addBatch();
+        }
+
     }
 
     /**
@@ -92,11 +81,8 @@ public class AssetScanWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<A
     public void invoke(List<Tuple2<AssetScanOrigin, String>> tuples, Context context) throws Exception {
         dataSource = new BasicDataSource();
         connection = getCon(dataSource);
-        String sql = "insert into  " + ScanCollectConstant.TAB_NAME_VULNERABILITY + "(resource_name,task_id," +
-                "scan_time,device_ip_address,ip_address_ownership,device_type,os_info,system_fingerprint_info," +
-                "open_service_of_port,message_oriented_middleware,data_base_info,running," +
-                "vulnerability_number)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?);";
+
+        String sql = "insert into " + AssetConstants.TAB_NAME_LVULNERABILITY + "(ip, cnvd_number, lm_number, source, insert_time)values(?,?,?,?,?);";
         ps = this.connection.prepareStatement(sql);
         //遍历数据集合
         for (Tuple2<AssetScanOrigin, String> tuple : tuples) {
@@ -105,6 +91,7 @@ public class AssetScanWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<A
         try {
             int[] count = ps.executeBatch();//批量后执行
             LOG.info(ScanCollectConstant.TAB_NAME_VULNERABILITY + ": 成功了插入了" + count.length + "行数据");
+            System.out.println(ScanCollectConstant.TAB_NAME_VULNERABILITY + ": 成功了插入了" + count.length + "行数据");
         }catch (Exception e){
             LOG.error(e.getMessage(), e);
         }finally {

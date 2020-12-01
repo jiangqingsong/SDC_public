@@ -3,7 +3,7 @@ package com.broadtech.analyse.pojo.cmcc;
 import java.util.ArrayList;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 资产发现 json解析对应Pojo
  * @date 2020-06-04 14:24
  */

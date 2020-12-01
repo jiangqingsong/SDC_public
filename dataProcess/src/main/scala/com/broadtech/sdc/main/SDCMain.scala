@@ -1,7 +1,7 @@
 package com.broadtech.sdc.main
 
 import com.broadtech.sdc.data_process.{AbnormalTrafficAnalysis, AggrWithVulnerability, AssetProcess, TrafficAds, TransAndPut}
-import com.broadtech.sdc.ss.LoadIDSLog
+import com.broadtech.sdc.ss.LoadAggrLog
 
 /**
  * SDC 离线任务入口类
@@ -28,7 +28,7 @@ object SDCMain {
         //漏洞库xml解析入库
       case "save_vulnerability" => AggrWithVulnerability.saveVulnerability(args(1), args(2), args(3), args(4), args(5))
 
-      case "load_ids"           => LoadIDSLog.loadIDSLog()
+      case "load_ids"           => LoadAggrLog.loadIDSLog(args(1))
     }
   }
 

@@ -1,0 +1,17 @@
+create table brd_vulnerability_unify(
+    ip varchar(50) comment '资产ip',
+    description text COMMENT '漏洞描述',
+    discoverername text COMMENT '漏洞发现者',
+    formalway text COMMENT '解决办法',
+    isevent text COMMENT '漏洞类型（是否为事件类漏洞）',
+    number text COMMENT 'CNVD漏洞编码',
+    opentime text COMMENT '漏洞公开时间',
+    patchdescription text COMMENT '补丁描述',
+    patchname text COMMENT '补丁名称',
+    product text COMMENT '影响的产品',
+    serverity text COMMENT '漏洞危害等级',
+    submittime text COMMENT '漏洞报送时间',
+    title text COMMENT '漏洞名称',
+    title text COMMENT '漏洞名称',
+    source varchar(2) COMMENT '漏洞来源 1-CNVD 2-绿盟漏洞扫描',
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

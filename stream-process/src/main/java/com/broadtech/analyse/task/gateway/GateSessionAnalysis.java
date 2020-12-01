@@ -31,7 +31,7 @@ import java.util.Properties;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 网关数据分析：
  * 1、用户行为分析
  * 2、资产画像

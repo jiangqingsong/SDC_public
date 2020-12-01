@@ -1,4 +1,4 @@
-package com.broadtech.analyse.task.cmcc;
+package com.broadtech.analyse.task.main;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -24,7 +24,6 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -38,8 +37,12 @@ import org.apache.log4j.Logger;
 import java.util.*;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 远程采集数据入mysql
+ * 1、资产数据（远程扫描）入库
+ * 2、打标签
+ * 3、漏洞碰撞
+ * 4、资产导入功能也是复用的该任务
  * @date 2020-06-09 10:42
  */
 public class AssetScan2MysqlV2 {
@@ -47,9 +50,9 @@ public class AssetScan2MysqlV2 {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
-        //String propPath = parameterTool.get("conf_path");
+        String propPath = parameterTool.get("conf_path");
         //获取配置数据
-        String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_scan_cfg.properties";
+        //String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_scan_cfg.properties";
         ParameterTool paramFromProps = ParameterTool.fromPropertiesFile(propPath);
         String consumerTopic = paramFromProps.get("consumer.topic");
         String completedTopic = paramFromProps.get("producer.completed.topic");
@@ -68,7 +71,7 @@ public class AssetScan2MysqlV2 {
         env.setParallelism(1);
 
         //从kafka读取Agent数据
-        DataStream<ObjectNode> kafkaStream = FlinkUtils.createKafkaStream(true, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
+        DataStream<ObjectNode> kafkaStream = FlinkUtils.createKafkaStream(false, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
         //把json格式的数据放入侧输出流
         final OutputTag<ObjectNode> jsonFormatTag = new OutputTag<ObjectNode>("JsonFormat") {
         };
@@ -86,8 +89,7 @@ public class AssetScan2MysqlV2 {
         //关联标签库
         SingleOutputStreamOperator<Tuple2<AssetScanOrigin, Tuple3<String, String, String>>> labelProcessedStream
                 = json2agentStream.process(new ScanWithLabelProcessFun(producerBrokers, discoverTopic, jdbcUrl, userName, password));
-        labelProcessedStream
-                .timeWindowAll(Time.milliseconds(timeout))
+        labelProcessedStream.timeWindowAll(Time.milliseconds(timeout))
                 .apply(new AllWindowFunction<Tuple2<AssetScanOrigin, Tuple3<String, String, String>>, List<Tuple2<AssetScanOrigin, Tuple3<String, String, String>>>, TimeWindow>() {
                     @Override
                     public void apply(TimeWindow window, Iterable<Tuple2<AssetScanOrigin, Tuple3<String, String, String>>> values, Collector<List<Tuple2<AssetScanOrigin, Tuple3<String, String, String>>>> out) throws Exception {
@@ -99,8 +101,7 @@ public class AssetScan2MysqlV2 {
                 }).addSink(new AssetScanWithLabelMysqlSink(jdbcUrl, userName, password));
 
         //关联漏洞库
-        json2agentStream.process(new ScanWithVulnerabilityProcessFun(jdbcUrl, userName, password))
-                .timeWindowAll(Time.milliseconds(timeout))
+        json2agentStream.process(new ScanWithVulnerabilityProcessFun(jdbcUrl, userName, password)).timeWindowAll(Time.milliseconds(timeout))
                 .apply(new AllWindowFunction<Tuple2<AssetScanOrigin, String>, List<Tuple2<AssetScanOrigin, String>>, TimeWindow>() {
                     @Override
                     public void apply(TimeWindow window, Iterable<Tuple2<AssetScanOrigin, String>> values, Collector<List<Tuple2<AssetScanOrigin, String>>> out) throws Exception {

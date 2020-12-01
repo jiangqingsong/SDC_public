@@ -1,6 +1,8 @@
 package com.broadtech.analyse.flink.sink.cmcc;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.broadtech.analyse.constants.asset.AssetConstants;
 import com.broadtech.analyse.flink.sink.cmcc.discover.AssetDiscoverScanMysqlSink;
 import com.broadtech.analyse.pojo.cmcc.AssetAgentOrigin;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -13,10 +15,11 @@ import org.apache.log4j.Logger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Agent采集资产数据mysql
  * @date 2020-05-28 15:37
  */
@@ -29,11 +32,14 @@ public class AssetAgentWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<A
     private String userName;
     private String password;
     private String sinkTable;
+    private Integer collectType;
+
 
     public AssetAgentWithLabelMysqlSink(String sinkTable, String jdbcUrl, String userName, String password) {
         this.jdbcUrl = jdbcUrl;
         this.userName = userName;
         this.password = password;
+        this.collectType = AssetConstants.AGENT.equals(sinkTable) ? 2 : 3;
         this.sinkTable = sinkTable;
     }
 
@@ -44,14 +50,6 @@ public class AssetAgentWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<A
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
-        /*dataSource = new BasicDataSource();
-        connection = getCon(dataSource);
-        String sql = "insert into  " + sinkTable + "(resource_name,task_id,asset_id," +
-                "scan_time,device_name,device_type,device_ip_address,os_info,patch_properties,kernel_version," +
-                "open_service_of_port,program_info,message_oriented_middleware,data_base_info" +
-                ",label_id,label_type1,label_type2)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-        ps = this.connection.prepareStatement(sql);*/
     }
 
     @Override
@@ -68,30 +66,35 @@ public class AssetAgentWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<A
 
     public void addBatch(Tuple2<AssetAgentOrigin, Tuple3<String, String, String>> tuple) throws SQLException {
         AssetAgentOrigin agent = tuple.f0;
-        Tuple3<String, String, String> labelInfo = tuple.f1;
-        ps.setString(1, agent.getResourceName());
-        ps.setString(2, agent.getTaskID());
-        ps.setString(3, agent.getAssetID());
-        ps.setString(4, agent.getScanTime());
-        ps.setString(5, agent.getDeviceName());
-        ps.setString(6, agent.getDeviceType());
-        ps.setString(7, JSON.toJSONString(agent.getDeviceIpAddresss()));//String
-        ps.setString(8, agent.getOSInfo());
-        ps.setString(9, JSON.toJSONString(agent.getPatchProperties()));//String
-        ps.setString(10, agent.getKernelVersion());
-        ps.setString(11, JSON.toJSONString(agent.getOpenServiceOfPorts()));//Integer
-        ps.setString(12, JSON.toJSONString(agent.getProgramInfos()));
-        ps.setString(13, JSON.toJSONString(agent.getMessageOrientedMiddlewares()));
-        ps.setString(14, JSON.toJSONString(agent.getDataBaseInfos()));
-        //label
-        ps.setString(15, labelInfo.f0);
-        ps.setString(16, labelInfo.f1);
-        ps.setString(17, labelInfo.f2);
-        ps.addBatch();
+        List<String> deviceIpAddresss = agent.getDeviceIpAddresss();
+        for (String deviceIpAddress : deviceIpAddresss) {
+            Tuple3<String, String, String> labelInfo = tuple.f1;
+            ps.setString(1, agent.getResourceName());
+            ps.setString(2, agent.getTaskID());
+            ps.setString(3, agent.getAssetID());
+            ps.setString(4, agent.getScanTime());
+            ps.setString(5, agent.getDeviceName());
+            ps.setString(6, agent.getDeviceType());
+            ps.setString(7, deviceIpAddress);//String
+            ps.setString(8, agent.getOSInfo());
+            ps.setString(9, JSON.toJSONString(agent.getPatchProperties()));//String
+            ps.setString(10, agent.getKernelVersion());
+            ps.setString(11, JSON.toJSONString(agent.getOpenServiceOfPorts()));//Integer
+            ps.setString(12, JSON.toJSONString(agent.getProgramInfos()));
+            ps.setString(13, JSON.toJSONString(agent.getMessageOrientedMiddlewares()));
+            ps.setString(14, JSON.toJSONString(agent.getDataBaseInfos()));
+            //label
+            ps.setString(15, labelInfo.f0);
+            ps.setString(16, labelInfo.f1);
+            ps.setString(17, labelInfo.f2);
+            ps.setInt(18, collectType);
+            ps.addBatch();
+        }
     }
 
     /**
      * 每条数据的插入都要调用一次 invoke() 方法
+     *
      * @param context
      * @throws Exception
      */
@@ -99,11 +102,11 @@ public class AssetAgentWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<A
     public void invoke(List<Tuple2<AssetAgentOrigin, Tuple3<String, String, String>>> tuples, Context context) throws Exception {
         dataSource = new BasicDataSource();
         connection = getCon(dataSource);
-        String sql = "insert into  " + sinkTable + "(resource_name,task_id,asset_id," +
+        String sql = "insert into  " + AssetConstants.TAB_NAME_LABEL + "(resource_name,task_id,asset_id," +
                 "scan_time,device_name,device_type,device_ip_address,os_info,patch_properties,kernel_version," +
                 "open_service_of_port,program_info,message_oriented_middleware,data_base_info" +
-                ",label_id,label_type1,label_type2)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                ",label_id,label_type1,label_type2,collect_type)" +
+                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         ps = this.connection.prepareStatement(sql);
         //遍历数据集合
         for (Tuple2<AssetAgentOrigin, Tuple3<String, String, String>> tuple : tuples) {
@@ -111,10 +114,11 @@ public class AssetAgentWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<A
         }
         try {
             int[] count = ps.executeBatch();//批量后执行
-            LOG.info(sinkTable + ": 成功了插入了" + count.length + "行数据");
-        }catch (Exception e){
+            LOG.info(AssetConstants.TAB_NAME_LABEL + "_" + collectType + ": 成功了插入了" + count.length + "行数据");
+            System.out.println(AssetConstants.TAB_NAME_LABEL + "_" + collectType + ": 成功了插入了" + count.length + "行数据");
+        } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-        }finally {
+        } finally {
             close();
         }
     }

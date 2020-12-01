@@ -1,5 +1,6 @@
 package com.broadtech.analyse.util;
 
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -8,20 +9,26 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-05-15 15:40
  */
 public class TimeUtils {
     public static long getTimestamp(String pattern, String time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-        TemporalAccessor parse = formatter.parse(time);
-        long timestamp = LocalDateTime.from(parse).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+        long timestamp;
+        try {
+
+            timestamp = (new SimpleDateFormat(pattern)).parse(time, new ParsePosition(0)).getTime();
+        }catch (Exception e){
+            timestamp = System.currentTimeMillis();
+        }
         return timestamp;
     }
 
     /**
      * 时间戳格式化
+     *
      * @param timestamp
      * @param pattern
      * @return

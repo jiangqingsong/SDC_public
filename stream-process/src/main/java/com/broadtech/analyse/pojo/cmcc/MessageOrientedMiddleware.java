@@ -3,7 +3,7 @@ package com.broadtech.analyse.pojo.cmcc;
 import com.alibaba.fastjson.JSON;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Agent消息中间件
  * @date 2020-06-09 16:34
  */

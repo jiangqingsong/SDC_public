@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.cmcc;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 返回消息体
  * @date 2020-06-10 19:43
  */

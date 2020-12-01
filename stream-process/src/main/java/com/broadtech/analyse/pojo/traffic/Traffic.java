@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.traffic;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-04-26 17:57
  */

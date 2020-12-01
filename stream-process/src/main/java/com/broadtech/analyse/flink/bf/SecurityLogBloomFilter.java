@@ -11,7 +11,7 @@ import org.apache.flink.util.Collector;
 import org.apache.log4j.Logger;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 按照原始字段某几个字段去重
  * @date 2020-08-04 11:43
  */

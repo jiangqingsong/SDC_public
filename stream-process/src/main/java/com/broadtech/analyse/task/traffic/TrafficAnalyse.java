@@ -33,7 +33,7 @@ import java.util.Properties;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 流量实时统计
  * @date 2020-04-26 15:05
  */

@@ -3,7 +3,7 @@ package com.broadtech.sdc.common
 import java.net.InetAddress
 import com.maxmind.geoip2.DatabaseReader
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description  IP 转换工具类
  * @date 2020-03-25 16:23
  */

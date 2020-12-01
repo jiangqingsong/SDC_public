@@ -5,7 +5,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.MapOperator;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 离线导入dpi数据
  * @date 2020-08-12 10:12
  */

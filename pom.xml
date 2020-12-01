@@ -24,6 +24,7 @@
         <module>SyslogTest</module>
         <module>SituationAwareness</module>
         <module>common</module>
+        <module>stream-table</module>
     </modules>
 
 

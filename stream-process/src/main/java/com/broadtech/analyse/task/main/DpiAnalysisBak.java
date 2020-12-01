@@ -1,21 +1,20 @@
-package com.broadtech.analyse.task.abnormal;
+package com.broadtech.analyse.task.main;
 
 import com.broadtech.analyse.flink.deserialization.CustomJSONDeserializationSchema;
 import com.broadtech.analyse.flink.function.abnormal.DpiJson2Obj;
 import com.broadtech.analyse.flink.function.abnormal.FilterCCIp;
+import com.broadtech.analyse.flink.process.abnormal.CcKeySelector;
 import com.broadtech.analyse.flink.process.abnormal.FilterJsonProcess;
 import com.broadtech.analyse.flink.process.abnormal.IntranetFallProcess;
 import com.broadtech.analyse.flink.process.abnormal.KeywordMatchProcess;
 import com.broadtech.analyse.flink.sink.abnormal.AlarmResultSink;
+import com.broadtech.analyse.flink.sink.abnormal.AlarmResultSinkBak;
+import com.broadtech.analyse.flink.sink.abnormal.DpiLogSink;
 import com.broadtech.analyse.flink.watermark.abnormal.DpiAssignTimestampAndWatermarks;
-import com.broadtech.analyse.flink.window.abnormal.CcAnalysisWindowFunc;
-import com.broadtech.analyse.flink.window.abnormal.CcAnalysisWindowFunc2;
-import com.broadtech.analyse.flink.window.abnormal.ResultWindowFunc;
-import com.broadtech.analyse.flink.window.abnormal.ScanAnalysisWindowFunc;
+import com.broadtech.analyse.flink.window.abnormal.*;
 import com.broadtech.analyse.pojo.abnormal.AlarmResult;
 import com.broadtech.analyse.pojo.abnormal.Dpi;
 import com.broadtech.analyse.util.env.FlinkUtils;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -29,24 +28,27 @@ import org.apache.log4j.Logger;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description DPI流量分析
+ * 1、威胁情报库碰撞入库
+ * 2、告警分析
  * @date 2020-08-21 10:01
  */
-public class DpiAnalysis {
+public class DpiAnalysisBak {
     private static Logger LOG = Logger.getLogger(DpiAnalysis.class);
     private static final OutputTag<ObjectNode> jsonFormatTag = new OutputTag<ObjectNode>("JsonFormat") {
     };
     private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static void main(String[] args) throws Exception {
 
-        String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\telecom_dpi_analysis.properties";
+        //String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\telecom_dpi_analysis.properties";
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
-        //String propPath = parameterTool.get("conf_path");
+        String propPath = parameterTool.get("conf_path");
         //获取配置参数
         ParameterTool paramFromProps = ParameterTool.fromPropertiesFile(propPath);
         String consumerTopic = paramFromProps.get("consumer.topic");
         String producerBrokers = paramFromProps.get("producer.bootstrap.server");
+        String sendTopic = paramFromProps.get("producer.sendTopic");
         String groupId = paramFromProps.get("consumer.groupId");
 
         Long windowSize = paramFromProps.getLong("windowSize");
@@ -73,18 +75,24 @@ public class DpiAnalysis {
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.setParallelism(1);
 
-        DataStream<ObjectNode> dpiSourceStream = FlinkUtils.createKafkaStream(true, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
+        DataStream<ObjectNode> dpiSourceStream = FlinkUtils.createKafkaStream(false, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
         DataStream<ObjectNode> filteredDpiSourceStream = dpiSourceStream.process(new FilterJsonProcess()).getSideOutput(jsonFormatTag);
 
         //分配时间戳
         SingleOutputStreamOperator<Dpi> dpiObjStream = filteredDpiSourceStream.map(new DpiJson2Obj())
                 .assignTimestampsAndWatermarks(new DpiAssignTimestampAndWatermarks(Time.seconds(5)));
 
+        //原始数据入库一份
+        SingleOutputStreamOperator<List<Dpi>> dpiBatchStream = dpiObjStream.countWindowAll(batchSize).apply(new DpiLogWindowFunc());
+        dpiBatchStream.addSink(new DpiLogSink(jdbcUrl, userName, password));
+
+
         //1、C&C 分析
         SingleOutputStreamOperator<AlarmResult> ccAbnormalStream = dpiObjStream.filter(new FilterCCIp(blackList, whiteList))
-                .keyBy(dpi -> Tuple2.of(dpi.getSrcIPAddress(), dpi.getDestIPAddress()))
+                .keyBy(new CcKeySelector())
                 .timeWindow(Time.minutes(windowSize))
                 .process(new CcAnalysisWindowFunc2(abnormalTimes, abnormalTrafficSize));
+        ccAbnormalStream.map(x -> x.toString()).print();
         SingleOutputStreamOperator<List<AlarmResult>> ccAbnormalBatchStream = ccAbnormalStream.countWindowAll(batchSize).apply(new ResultWindowFunc());
 
         SingleOutputStreamOperator<AlarmResult> ccAbnormal2Stream = dpiObjStream.filter(new FilterCCIp(blackList, whiteList))
@@ -108,11 +116,11 @@ public class DpiAnalysis {
         SingleOutputStreamOperator<List<AlarmResult>> intranetFallBatchStream = intranetFallStream.countWindowAll(batchSize).apply(new ResultWindowFunc());
 
         //sink
-        ccAbnormalBatchStream.addSink(new AlarmResultSink(jdbcUrl, userName, password));
-        ccAbnormal2BatchStream.addSink(new AlarmResultSink(jdbcUrl, userName, password));
-        suspiciousOutBatchStream.addSink(new AlarmResultSink(jdbcUrl, userName, password));
-        scanBatchStream.addSink(new AlarmResultSink(jdbcUrl, userName, password));
-        intranetFallBatchStream.addSink(new AlarmResultSink(jdbcUrl, userName, password));
+        ccAbnormalBatchStream.addSink(new AlarmResultSinkBak(jdbcUrl, userName, password));
+        ccAbnormal2BatchStream.addSink(new AlarmResultSinkBak(jdbcUrl, userName, password));
+        suspiciousOutBatchStream.addSink(new AlarmResultSinkBak(jdbcUrl, userName, password));
+        scanBatchStream.addSink(new AlarmResultSinkBak(jdbcUrl, userName, password));
+        intranetFallBatchStream.addSink(new AlarmResultSinkBak(jdbcUrl, userName, password));
 
         env.execute("Telecom Abnormal Analysis Job.");
     }

@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Connection;
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-05-28 14:23
  */

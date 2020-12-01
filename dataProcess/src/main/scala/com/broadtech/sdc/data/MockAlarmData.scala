@@ -3,7 +3,7 @@ package com.broadtech.sdc.data
 import scala.util.Random
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description mock 告警数据
  * @date 2020-04-02 14:05
  */

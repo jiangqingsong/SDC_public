@@ -1,7 +1,7 @@
 package com.broadtech.analyse.task.offline.ss;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-11 17:50
  */

@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 资产发现(login)数据入库
  * @date 2020-06-09 10:42
  */

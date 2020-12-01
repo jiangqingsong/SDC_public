@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description  多条记录转一条放入List中
  * @date 2020-08-12 17:13
  */

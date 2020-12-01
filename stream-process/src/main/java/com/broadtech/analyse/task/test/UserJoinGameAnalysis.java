@@ -29,7 +29,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 统计一天内单个用户参加了几个游戏
  * @date 2020-05-15 15:10
  */

@@ -1,36 +1,64 @@
 package com.broadtech.analyse.task.test;
 
+import com.alibaba.fastjson.JSON;
+import com.broadtech.analyse.pojo.main.AlarmEvenUnify;
+import com.broadtech.analyse.util.TimeUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import java.sql.Timestamp;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-13 17:11
  */
 public class TestPro {
     public static void main(String[] args) {
-        Properties props = new Properties();
+        System.out.println(UUID.randomUUID().toString().replace("-", "").toLowerCase());
 
-        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,"192.168.5.92:9092");
-        props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,"org.apache.kafka.common.serialization.StringSerializer");
-        props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,"org.apache.kafka.common.serialization.StringSerializer");
+        T t = new T("AA", "file");
+        String json = JSON.toJSONString(t);
+        System.out.println(json);
 
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
+        AlarmEvenUnify alarmEvenUnify = new AlarmEvenUnify(
+                "test", "11", "22", "33", "4",
+                "5", "192.168.5.93", "3", "1", "3",
+                "huawei", "192.168.5.91", "8088", "xxxx", "192.168.5.94",
+                "8081", "sssssssssss", "3", "南京", "98.2",
+                "", "2020-09-10 11:00:19", "", "", ""
+        );
+        System.out.println(JSON.toJSONString(alarmEvenUnify));
+    }
 
-        for (int i = 0;i < 50;i++){
-            ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>("test_security_analysis","abc" + i);
-            producer.send(producerRecord,(metadata ,e) -> {
-                if (e == null){
-                    System.out.println("success ->" + metadata.offset());
-                }else {
-                    e.printStackTrace();
-                }
-            });
-        }
-        producer.close();
+}
+class T{
+    private String name;
+    private String file;
+
+    public T(String name, String file) {
+        this.name = name;
+        this.file = file;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
     }
 }

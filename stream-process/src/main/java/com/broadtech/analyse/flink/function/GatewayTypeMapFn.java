@@ -4,7 +4,7 @@ import com.broadtech.analyse.pojo.gateway.GatewaySession;
 import org.apache.flink.api.common.functions.MapFunction;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 原始数据转换成GatewaySession
  * @date 2020-05-09 15:54
  */

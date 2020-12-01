@@ -3,7 +3,7 @@ package com.broadtech.analyse.flink.function;
 import org.apache.flink.api.common.functions.MapFunction;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-05-09 16:10
  */

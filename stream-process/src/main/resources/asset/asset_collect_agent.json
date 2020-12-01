@@ -1,0 +1,62 @@
+{
+  "ResourceName": "HostInfo",
+  "TaskID": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "ScanTime": "2020-5-21 16:20:20",
+  "AssetID": "test111",
+  "ResourceInfo": {
+    "DeviceName": "dell3350",
+    "DeviceType": "xxx",
+    "DeviceIPAddress": ["192.168.254.22", "192.168.100.10"],
+    "OSInfo": "ubuntu16.04",
+    "PatchProperties": ["KB2131213", "KB2131217", "KB2131220"],
+    "KernelVersion": "10.0.18363.836",
+    "OpenServiceOfPort": [22, 23, 80],
+    "ProgramInfo": [{
+      "Pid": 23456,
+      "Name": "office",
+      "Version": "1.2.3",
+      "User": "root",
+      "Group": "root",
+      "Path": "/etc/rsyslog",
+      "Parameter": "-o aaa -c a.cpp",
+      "StartTime": "2020-6-10 15:04:35"
+    }, {
+      "Pid": 23536,
+      "Name": "gcc",
+      "Version": "4.8.101",
+      "User": "root",
+      "Group": "root",
+      "Path": "/usr/libexec/gcc",
+      "Parameter": "-o aaa -c a.cpp",
+      "StartTime": "2020-6-10 15:06:30"
+    }],
+    "MessageOrientedMiddleware": [{
+      "Name": "kafka",
+      "Version": "1.2.1",
+      "Port": 9092,
+      "Path": "/usr/libexec/gcc",
+      "User": "root",
+      "DevelopmentLanguage": "java",
+      "Plug_in_library_name": ["xxyyx1", "xxyyx2", "xxyyx3"]
+    }, {
+      "Name": "Tomcat",
+      "Version": "9.0.6",
+      "Port": 8080,
+      "Path": "/usr/share/tomcat6/",
+      "User": "root",
+      "DevelopmentLanguage": "java",
+      "Plug_in_library_name": ["xxxxx1", "xxxxx2", "xxxxx3"]
+    }],
+    "DataBaseInfo": [{
+      "Name": "mysql",
+      "Version": "8.0.20",
+      "Port": 3306,
+      "User": "root"
+    }, {
+      "Name": "oracle",
+      "Version": "12.2.0.3",
+      "Port": 1521,
+      "User": "root"
+    }]
+  }
+}

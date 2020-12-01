@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SyslogTest:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SyslogTest_jar</output-path>
+    <root id="archive" name="SyslogTest.jar">
+      <element id="module-output" name="SyslogTest" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/mysql/mysql-connector-java/8.0.19/mysql-connector-java-8.0.19.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/protobuf/protobuf-java/3.6.1/protobuf-java-3.6.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

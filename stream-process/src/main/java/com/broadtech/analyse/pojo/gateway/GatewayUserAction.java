@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.gateway;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 用户行为聚合结果类
  * @date 2020-05-09 17:13
  */

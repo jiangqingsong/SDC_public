@@ -9,7 +9,7 @@ import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrderness
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-05-14 10:00
  */

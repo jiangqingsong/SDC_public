@@ -16,7 +16,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description flink工具类
  * @date 2020-05-15 14:19
  */

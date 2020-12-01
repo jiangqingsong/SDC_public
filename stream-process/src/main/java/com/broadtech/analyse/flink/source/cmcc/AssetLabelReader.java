@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 从mysql读取资产标签库
  * @date 2020-04-26 17:16
  */

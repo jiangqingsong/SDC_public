@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 两种场景可以触发：1、到时间就触发，并且到时间之前如果已经积累了足够数量的数据；
  *                              2、或者在限定时间内没有积累足够数量的数据，我依然希望触发窗口业务
  * @date 2020-05-28 16:39

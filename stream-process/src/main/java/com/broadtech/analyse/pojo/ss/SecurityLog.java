@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.ss;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 安全日志POJO
  * @date 2020-08-04 11:46
  */
@@ -38,8 +38,13 @@ public class SecurityLog {
     private String malwaresample;
     private String softwarename;
     private String softwareversion;
+    private String uuid;
 
-    public SecurityLog(String id, String eventrecvtime, String eventgeneratetime, String eventdurationtime, String username, String srcipaddress, String srcmacaddress, String srcport, String operation, String destipaddress, String destmacaddress, String destport, String eventname, String firsteventtype, String secondeventtype, String thirdeventtype, String eventdesc, String eventgrade, String networkprotocal, String netappprotocal, String deviceipaddress, String devicename, String devicetype, String devicefactory, String devicemodel, String pid, String url, String domain, String mail, String malwaresample, String softwarename, String softwareversion) {
+    public String getUuid() {
+        return uuid;
+    }
+
+    public SecurityLog(String id, String eventrecvtime, String eventgeneratetime, String eventdurationtime, String username, String srcipaddress, String srcmacaddress, String srcport, String operation, String destipaddress, String destmacaddress, String destport, String eventname, String firsteventtype, String secondeventtype, String thirdeventtype, String eventdesc, String eventgrade, String networkprotocal, String netappprotocal, String deviceipaddress, String devicename, String devicetype, String devicefactory, String devicemodel, String pid, String url, String domain, String mail, String malwaresample, String softwarename, String softwareversion, String uuid) {
         this.id = id;
         this.eventrecvtime = eventrecvtime;
         this.eventgeneratetime = eventgeneratetime;
@@ -72,6 +77,7 @@ public class SecurityLog {
         this.malwaresample = malwaresample;
         this.softwarename = softwarename;
         this.softwareversion = softwareversion;
+        this.uuid = uuid;
     }
 
     public String getSoftwarename() {
@@ -334,4 +340,41 @@ public class SecurityLog {
         this.malwaresample = malwaresample;
     }
 
+    @Override
+    public String toString() {
+        return "SecurityLog{" +
+                "id='" + id + '\'' +
+                ", eventrecvtime='" + eventrecvtime + '\'' +
+                ", eventgeneratetime='" + eventgeneratetime + '\'' +
+                ", eventdurationtime='" + eventdurationtime + '\'' +
+                ", username='" + username + '\'' +
+                ", srcipaddress='" + srcipaddress + '\'' +
+                ", srcmacaddress='" + srcmacaddress + '\'' +
+                ", srcport='" + srcport + '\'' +
+                ", operation='" + operation + '\'' +
+                ", destipaddress='" + destipaddress + '\'' +
+                ", destmacaddress='" + destmacaddress + '\'' +
+                ", destport='" + destport + '\'' +
+                ", eventname='" + eventname + '\'' +
+                ", firsteventtype='" + firsteventtype + '\'' +
+                ", secondeventtype='" + secondeventtype + '\'' +
+                ", thirdeventtype='" + thirdeventtype + '\'' +
+                ", eventdesc='" + eventdesc + '\'' +
+                ", eventgrade='" + eventgrade + '\'' +
+                ", networkprotocal='" + networkprotocal + '\'' +
+                ", netappprotocal='" + netappprotocal + '\'' +
+                ", deviceipaddress='" + deviceipaddress + '\'' +
+                ", devicename='" + devicename + '\'' +
+                ", devicetype='" + devicetype + '\'' +
+                ", devicefactory='" + devicefactory + '\'' +
+                ", devicemodel='" + devicemodel + '\'' +
+                ", pid='" + pid + '\'' +
+                ", url='" + url + '\'' +
+                ", domain='" + domain + '\'' +
+                ", mail='" + mail + '\'' +
+                ", malwaresample='" + malwaresample + '\'' +
+                ", softwarename='" + softwarename + '\'' +
+                ", softwareversion='" + softwareversion + '\'' +
+                '}';
+    }
 }

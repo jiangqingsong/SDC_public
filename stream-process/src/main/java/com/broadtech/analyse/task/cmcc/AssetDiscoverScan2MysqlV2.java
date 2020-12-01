@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 资产发现(scan)数据入库
  * @date 2020-06-09 10:42
  */
@@ -38,9 +38,9 @@ public class AssetDiscoverScan2MysqlV2 {
     };
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
-        String propPath = parameterTool.get("conf_path");
+        //String propPath = parameterTool.get("conf_path");
         //获取配置数据
-        //String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_discover_scan_cfg.properties";
+        String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_discover_scan_cfg.properties";
         ParameterTool paramFromProps = ParameterTool.fromPropertiesFile(propPath);
         String consumerTopic = paramFromProps.get("consumer.topic");
         String producerTopic = paramFromProps.get("producer.topic");
@@ -56,7 +56,7 @@ public class AssetDiscoverScan2MysqlV2 {
         env.setParallelism(1);
 
         //从kafka读取Agent数据
-        DataStream<ObjectNode> kafkaStream = FlinkUtils.createKafkaStream(false, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
+        DataStream<ObjectNode> kafkaStream = FlinkUtils.createKafkaStream(true, paramFromProps, consumerTopic, groupId, CustomJSONDeserializationSchema.class);
         //把json格式的数据放入侧输出流
         DataStream<ObjectNode> jsonedAgentStream = kafkaStream.process(new ProcessFunction<ObjectNode, ObjectNode>() {
             @Override

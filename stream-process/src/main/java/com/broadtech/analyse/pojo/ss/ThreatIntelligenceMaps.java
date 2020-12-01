@@ -3,7 +3,7 @@ package com.broadtech.analyse.pojo.ss;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-07 17:41
  */

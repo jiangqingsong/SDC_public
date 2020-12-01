@@ -4,7 +4,7 @@ import com.broadtech.analyse.util.env.FlinkUtils;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-05 17:38
  */

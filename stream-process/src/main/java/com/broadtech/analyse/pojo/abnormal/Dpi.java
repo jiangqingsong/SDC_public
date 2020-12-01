@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.abnormal;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-21 11:08
  */
@@ -22,8 +22,9 @@ public class Dpi {
     public String DomainName;
     public String Url;
     public String FileName;
+    public String id;
 
-    public Dpi(String srcIPAddress, String srcPort, String destIPAddress, String destPort, String protocol, String startTime, String endTime, String connectDuration, String packetSize, String packetNumber, String upstreamTraffic, String downstreamTraffic, String trafficSize, String domainName, String url, String fileName) {
+    public Dpi(String srcIPAddress, String srcPort, String destIPAddress, String destPort, String protocol, String startTime, String endTime, String connectDuration, String packetSize, String packetNumber, String upstreamTraffic, String downstreamTraffic, String trafficSize, String domainName, String url, String fileName, String id) {
         SrcIPAddress = srcIPAddress;
         SrcPort = srcPort;
         DestIPAddress = destIPAddress;
@@ -40,6 +41,15 @@ public class Dpi {
         DomainName = domainName;
         Url = url;
         FileName = fileName;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSrcIPAddress() {
@@ -168,5 +178,28 @@ public class Dpi {
 
     public void setFileName(String fileName) {
         FileName = fileName;
+    }
+
+    @Override
+    public String toString() {
+        return "Dpi{" +
+                "SrcIPAddress='" + SrcIPAddress + '\'' +
+                ", SrcPort='" + SrcPort + '\'' +
+                ", DestIPAddress='" + DestIPAddress + '\'' +
+                ", DestPort='" + DestPort + '\'' +
+                ", Protocol='" + Protocol + '\'' +
+                ", StartTime='" + StartTime + '\'' +
+                ", EndTime='" + EndTime + '\'' +
+                ", ConnectDuration='" + ConnectDuration + '\'' +
+                ", PacketSize='" + PacketSize + '\'' +
+                ", PacketNumber='" + PacketNumber + '\'' +
+                ", UpstreamTraffic='" + UpstreamTraffic + '\'' +
+                ", DownstreamTraffic='" + DownstreamTraffic + '\'' +
+                ", TrafficSize='" + TrafficSize + '\'' +
+                ", DomainName='" + DomainName + '\'' +
+                ", Url='" + Url + '\'' +
+                ", FileName='" + FileName + '\'' +
+                ", id='" + id + '\'' +
+                '}';
     }
 }

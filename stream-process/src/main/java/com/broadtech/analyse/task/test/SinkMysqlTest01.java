@@ -11,7 +11,7 @@ import org.apache.flink.types.Row;
 import java.sql.Types;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description TODO 测试一下
  * @date 2020-06-15 23:07
  */

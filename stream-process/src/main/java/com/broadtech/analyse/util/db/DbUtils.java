@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.util.Properties;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description jdbc工具类
  * @date 2020-06-08 15:39
  */

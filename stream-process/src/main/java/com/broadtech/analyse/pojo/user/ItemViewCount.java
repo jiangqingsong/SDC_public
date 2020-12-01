@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.user;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-05-11 15:46
  */

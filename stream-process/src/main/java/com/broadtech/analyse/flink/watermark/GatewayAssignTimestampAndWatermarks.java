@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import java.sql.Timestamp;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-04-26 18:05
  */

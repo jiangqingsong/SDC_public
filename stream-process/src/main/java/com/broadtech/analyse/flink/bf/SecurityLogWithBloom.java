@@ -11,7 +11,7 @@ import org.apache.flink.util.Collector;
 import org.apache.log4j.Logger;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 按照原始字段某几个字段去重
  * @date 2020-08-04 11:43
  */
@@ -29,6 +29,11 @@ public class SecurityLogWithBloom extends ProcessFunction<SecurityLog, SecurityL
 
     @Override
     public void processElement(SecurityLog securityLog, Context context, Collector<SecurityLog> out) throws Exception {
+        /**
+         * String secondeventtype = value.getSecondeventtype();
+         *         String eventname = value.getEventname();
+         *         String eventgrade = value.getEventgrade();
+         */
         StringBuilder distinctKey = new StringBuilder();
         String deviceipaddress = securityLog.getDeviceipaddress();
         String eventname = securityLog.getEventname();
@@ -36,6 +41,7 @@ public class SecurityLogWithBloom extends ProcessFunction<SecurityLog, SecurityL
         String secondeventtype = securityLog.getSecondeventtype();
         String thirdeventtype = securityLog.getThirdeventtype();
         String eventgeneratetime = securityLog.getEventgeneratetime();
+        String eventgrade = securityLog.getEventgrade();
         distinctKey.append(deviceipaddress);
         distinctKey.append(eventname);
         distinctKey.append(firsteventtype);
@@ -43,7 +49,8 @@ public class SecurityLogWithBloom extends ProcessFunction<SecurityLog, SecurityL
         distinctKey.append(thirdeventtype);
         distinctKey.append(eventgeneratetime);
         //判断value是否在BF中
-        if(!subOrderFilter.mightContain(distinctKey.toString())){
+        //增加了判断：非告警日志数据才做威胁情报碰撞
+        if((/*secondeventtype.isEmpty()&&*/eventname.isEmpty()&&eventgrade.isEmpty()) && (!subOrderFilter.mightContain(distinctKey.toString()))){
             subOrderFilter.put(distinctKey.toString());
             out.collect(securityLog);
         }

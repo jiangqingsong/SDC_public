@@ -1,11 +1,9 @@
 package com.broadtech.analyse.flink.sink.cmcc;
 
 import com.alibaba.fastjson.JSON;
-import com.broadtech.analyse.constants.asset.AgentCollectConstant;
+import com.broadtech.analyse.constants.asset.AssetConstants;
 import com.broadtech.analyse.constants.asset.ScanCollectConstant;
-import com.broadtech.analyse.pojo.cmcc.AssetAgentOrigin;
 import com.broadtech.analyse.pojo.cmcc.AssetScanOrigin;
-import com.broadtech.analyse.task.cmcc.AssetScan2MysqlV2;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
@@ -19,7 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Agent采集资产数据mysql
  * @date 2020-05-28 15:37
  */
@@ -45,15 +43,6 @@ public class AssetScanWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<As
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
-        /*dataSource = new BasicDataSource();
-        //connection = DbUtils.getCon(dataSource, "/jdbc.properties");
-        connection = getCon(dataSource);
-        String sql = "insert into  " + ScanCollectConstant.TAB_NAME_LABEL + "(resource_name,task_id,scan_time," +
-                "device_ip_address,ip_address_ownership,device_type,os_info,system_fingerprint_info," +
-                "open_service_of_port,message_oriented_middleware,data_base_info,running," +
-                "label_id,label_type1,label_type2)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-        ps = this.connection.prepareStatement(sql);*/
     }
 
     @Override
@@ -87,6 +76,7 @@ public class AssetScanWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<As
         ps.setString(13, labelInfo.f0);
         ps.setString(14, labelInfo.f1);
         ps.setString(15, labelInfo.f2);
+        ps.setInt(16, AssetConstants.SCAN_COLLECT);
         ps.addBatch();
     }
 
@@ -99,11 +89,11 @@ public class AssetScanWithLabelMysqlSink extends RichSinkFunction<List<Tuple2<As
     public void invoke(List<Tuple2<AssetScanOrigin, Tuple3<String, String, String>>> tuples, Context context) throws Exception {
         dataSource = new BasicDataSource();
         connection = getCon(dataSource);
-        String sql = "insert into  " + ScanCollectConstant.TAB_NAME_LABEL + "(resource_name,task_id,scan_time," +
+        String sql = "insert into  " + AssetConstants.TAB_NAME_LABEL + "(resource_name,task_id,scan_time," +
                 "device_ip_address,ip_address_ownership,device_type,os_info,system_fingerprint_info," +
                 "open_service_of_port,message_oriented_middleware,data_base_info,running," +
-                "label_id,label_type1,label_type2)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                "label_id,label_type1,label_type2,collect_type)" +
+                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         ps = this.connection.prepareStatement(sql);
         //遍历数据集合
         for (Tuple2<AssetScanOrigin, Tuple3<String, String, String>> tuple : tuples) {

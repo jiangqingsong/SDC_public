@@ -11,7 +11,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import java.util.Properties;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-06-10 19:15
  */

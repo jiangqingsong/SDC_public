@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.ss;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 威胁情报库POJO
  * @date 2020-08-10 15:35
  */

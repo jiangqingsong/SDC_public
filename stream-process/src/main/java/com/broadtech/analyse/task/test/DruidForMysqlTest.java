@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Test: 使用druid连接池测试长时间不使用连接，
  * @date 2020-06-23 14:37
  */

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 从mysql读取威胁情报库
  * @date 2020-07-17 17:16
  */

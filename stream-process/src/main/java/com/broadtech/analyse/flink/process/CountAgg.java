@@ -4,8 +4,8 @@ import com.broadtech.analyse.pojo.user.UserBehavior;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
- * @author jiangqingsong
- * @description
+ * @author leo.J
+ * @leo.J
  * @date 2020-05-11 15:42
  */
 public class CountAgg implements AggregateFunction<UserBehavior, Long, Long> {

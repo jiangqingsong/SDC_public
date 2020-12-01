@@ -1,7 +1,7 @@
 package com.broadtech.analyse.constants.ss;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-07 17:14
  */

@@ -12,5 +12,4 @@ object SparkEnvUtil {
     .enableHiveSupport
     .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
     .getOrCreate
-
 }

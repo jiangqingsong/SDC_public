@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 按指定条数放入一个窗口  为后面batch insert做准备
  * @date 2020-08-22 11:22
  */

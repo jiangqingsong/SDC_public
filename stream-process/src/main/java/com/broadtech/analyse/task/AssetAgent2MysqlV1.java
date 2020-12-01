@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Agent采集数据入mysql
  * @date 2020-06-09 10:42
  */
@@ -42,7 +42,7 @@ public class AssetAgent2MysqlV1 {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
         String propPath = parameterTool.get("conf_path");
         //获取配置数据
-        //String propPath = "D:\\SDC\\gitlab_code\\sdcplatform\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_agent_cfg.properties";
+        //String propPath = "D:\\SDC\\gitlab_code\\sdcplatfor m\\SDCPlatform\\stream-process\\src\\main\\resources\\asset_agent_cfg.properties";
         ParameterTool paramFromProps = ParameterTool.fromPropertiesFile(propPath);
         String consumerTopic = paramFromProps.get("consumer.topic");
         String producerTopic = paramFromProps.get("producer.topic");
@@ -144,8 +144,8 @@ public class AssetAgent2MysqlV1 {
                 List<ProgramInfo> programInfos = JSON.parseArray(programInfoJson, ProgramInfo.class);
 
                 //arr
-                String startUpJson = resourceObj.get(AgentCollectConstant.START_UP).toString();
-                List<String> startUps = JSON.parseArray(startUpJson, String.class);
+                /*String startUpJson = resourceObj.get(AgentCollectConstant.START_UP).toString();
+                List<String> startUps = JSON.parseArray(startUpJson, String.class);*/
                 //[obj]
                 String messageOrientedMiddlewareJson = resourceObj.get(AgentCollectConstant.MESSAGE_ORIENTED_MIDDLEWARE).toString();
                 List<MessageOrientedMiddleware> messageOrientedMiddlewares = JSON.parseArray(messageOrientedMiddlewareJson, MessageOrientedMiddleware.class);

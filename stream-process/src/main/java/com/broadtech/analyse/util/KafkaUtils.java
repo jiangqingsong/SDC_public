@@ -6,7 +6,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import java.util.Properties;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-06-13 18:41
  */

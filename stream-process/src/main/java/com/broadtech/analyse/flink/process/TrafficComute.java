@@ -1,7 +1,7 @@
 package com.broadtech.analyse.flink.process;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-04-27 15:25
  */

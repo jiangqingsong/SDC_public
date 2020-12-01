@@ -14,8 +14,8 @@ import org.apache.flink.util.Collector;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
- * @description
+ * @author leo.J
+ * @leo.J
  * @date 2020-04-27 13:58
  */
 public class AbnormaProcessFunc extends BroadcastProcessFunction<Tuple2<String, Double>, Map<Integer, Tuple2<Double, Double>>, Traffic> {

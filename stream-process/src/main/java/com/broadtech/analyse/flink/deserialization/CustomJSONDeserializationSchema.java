@@ -1,17 +1,13 @@
 package com.broadtech.analyse.flink.deserialization;
 
-import com.broadtech.analyse.task.cmcc.AssetScan2MysqlV2;
 import org.apache.flink.api.common.serialization.AbstractDeserializationSchema;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
 
 import java.io.IOException;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 自定义JSON反序列化，解决非json传输出错问题
  * @date 2020-06-05 15:58
  */

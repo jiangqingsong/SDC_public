@@ -6,7 +6,7 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-05-11 16:46
  */

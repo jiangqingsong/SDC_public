@@ -4,7 +4,7 @@ import com.broadtech.analyse.pojo.traffic.Traffic;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-04-27 16:39
  */

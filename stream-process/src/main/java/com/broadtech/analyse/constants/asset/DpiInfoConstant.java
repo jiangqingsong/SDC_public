@@ -1,7 +1,7 @@
 package com.broadtech.analyse.constants.asset;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description  DPI字段信息
  * @date 2020-05-28 14:45
  */

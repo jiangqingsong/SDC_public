@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * 1、原始Json转SecurityLog
  * @date 2020-08-12 15:57
@@ -33,7 +33,7 @@ public class SecurityJson2SecurityLog extends RichMapFunction<ObjectNode, Securi
         SecurityLog securityLog;
         try {
             JSONObject logObj = JSON.parseObject(log.toString());
-            String id = logObj.get("id").toString();
+            //String id = logObj.get("id").toString();
             String eventrecvtime = logObj.get("eventrecvtime").toString();
             String eventgeneratetime = logObj.get("eventgeneratetime").toString();
             String eventdurationtime = logObj.get("eventdurationtime").toString();
@@ -65,11 +65,12 @@ public class SecurityJson2SecurityLog extends RichMapFunction<ObjectNode, Securi
             String malwaresample = logObj.get("malwaresample").toString();
             String softwarename = logObj.get("softwarename").toString();
             String softwareversion = logObj.get("softwareversion").toString();
+            String uuid = logObj.get("uuid").toString();
 
-            securityLog = new SecurityLog(id,eventrecvtime,eventgeneratetime,eventdurationtime,username,srcipaddress,
+            securityLog = new SecurityLog("",eventrecvtime,eventgeneratetime,eventdurationtime,username,srcipaddress,
                     srcmacaddress,srcport,operation,destipaddress,destmacaddress,destport,eventname,firsteventtype,
                     secondeventtype,thirdeventtype,eventdesc,eventgrade,networkprotocal,netappprotocal,deviceipaddress,
-                    devicename,devicetype,devicefactory,devicemodel,pid,url,domain,mail,malwaresample,softwarename,softwareversion);
+                    devicename,devicetype,devicefactory,devicemodel,pid,url,domain,mail,malwaresample,softwarename,softwareversion,uuid);
 
             return securityLog;
         } catch (Exception e) {

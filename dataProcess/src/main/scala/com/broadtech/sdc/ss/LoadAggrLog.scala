@@ -5,13 +5,15 @@ import com.broadtech.sdc.common.SparkEnvUtil._
 import org.apache.spark.sql.SaveMode
 /**
  * @author jiangqingsong
- * @description 导入ids日志数据
+ * @description 导入日志数据
+ *             1、离线数据存放在127集群hdfs上,eg：/user/jqs/data/ss/ids.csv
+ *             2、.option("escape", "\"") 转义符处理
  * @date 2020-07-16 10:12
  */
-object LoadIDSLog {
+object LoadAggrLog {
   import spark.implicits._
-  def loadIDSLog(): Unit ={
-    val dataPath = "/user/jqs/data/ss/ids.csv"
+  def loadIDSLog(dataPath: String): Unit ={
+    //val dataPath = "/user/jqs/data/ss/ids.csv"
     val df = spark.read.option("header","true").option("escape", "\"").csv(dataPath)
     val finalDf = df.rdd.map(x => IdsLog(
       x.getString(0), x.getString(1), x.getString(2), x.getString(3), x.getString(4), x.getString(5), x.getString(6),
@@ -48,6 +50,7 @@ object LoadIDSLog {
                       source_icollecttype: String,
                       source_ieventlevel: String,
                       source_iprotocol: String,
+
                       source_iappprotocol: String,
                       source_csrcname: String,
                       source_csrcmac: String,

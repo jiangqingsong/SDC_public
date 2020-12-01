@@ -7,18 +7,24 @@ import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrderness
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-22 13:45
  */
 public class DpiAssignTimestampAndWatermarks extends BoundedOutOfOrdernessTimestampExtractor<Dpi> {
-    private static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String TIME_PATTERN = "yyyy-MM-dd hh:mm:ss";
 
     public DpiAssignTimestampAndWatermarks(Time maxOutOfOrderness) {
         super(maxOutOfOrderness);
     }
     @Override
     public long extractTimestamp(Dpi dpi) {
-        return TimeUtils.getTimestamp(TIME_PATTERN, dpi.getStartTime());
+        long t ;
+        try {
+            t = TimeUtils.getTimestamp(TIME_PATTERN, dpi.getStartTime());
+        }catch (Exception e){
+            t = System.currentTimeMillis();
+        }
+        return t;
     }
 }

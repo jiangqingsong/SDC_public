@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 资产发现数据入库
  * @date 2020-05-28 15:37
  */

@@ -9,7 +9,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.types.Row;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-11 16:47
  */

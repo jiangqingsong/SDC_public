@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * 1、原始Json转SecurityLog
  * 2、增加字段eventCount

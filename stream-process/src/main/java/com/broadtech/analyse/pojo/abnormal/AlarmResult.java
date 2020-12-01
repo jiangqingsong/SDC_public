@@ -1,7 +1,7 @@
 package com.broadtech.analyse.pojo.abnormal;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 告警表
  * @date 2020-08-21 18:02
  */
@@ -17,9 +17,9 @@ public class AlarmResult {
     public String category;
     public String score;
     public Integer alarmType;
+    public String traceIds;
 
-
-    public AlarmResult(String srcIpAddress, String destIpAddress, String windowStart, String windowEnd, String trafficSize, String fileName, String keyword, String geo, String category, String score, Integer alarmType) {
+    public AlarmResult(String srcIpAddress, String destIpAddress, String windowStart, String windowEnd, String trafficSize, String fileName, String keyword, String geo, String category, String score, Integer alarmType, String traceIds) {
         this.srcIpAddress = srcIpAddress;
         this.destIpAddress = destIpAddress;
         this.windowStart = windowStart;
@@ -31,6 +31,15 @@ public class AlarmResult {
         this.category = category;
         this.score = score;
         this.alarmType = alarmType;
+        this.traceIds = traceIds;
+    }
+
+    public String getTraceIds() {
+        return traceIds;
+    }
+
+    public void setTraceIds(String traceIds) {
+        this.traceIds = traceIds;
     }
 
     public String getWindowStart() {
@@ -120,4 +129,5 @@ public class AlarmResult {
     public void setAlarmType(Integer alarmType) {
         this.alarmType = alarmType;
     }
+
 }

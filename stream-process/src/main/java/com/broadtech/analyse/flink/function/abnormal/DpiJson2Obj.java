@@ -9,8 +9,10 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.log4j.Logger;
 
+import java.util.UUID;
+
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * 1、原始Json转Dpi
  * @date 2020-08-12 15:57
@@ -39,8 +41,10 @@ public class DpiJson2Obj extends RichMapFunction<ObjectNode, Dpi> {
             String DomainName = dpiJson.get("DomainName").toString();
             String Url = dpiJson.get("Url").toString();
             String FileName = dpiJson.get("FileName").toString();
+            String id = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
-            Dpi dpi = new Dpi(SrcIPAddress, SrcPort, DestIPAddress, DestPort, Protocol, StartTime, EndTime, ConnectDuration, PacketSize, PacketNumber, UpstreamTraffic, DownstreamTraffic, TrafficSize, DomainName, Url, FileName);
+            Dpi dpi = new Dpi(SrcIPAddress, SrcPort, DestIPAddress, DestPort, Protocol, StartTime, EndTime, ConnectDuration,
+                    PacketSize, PacketNumber, UpstreamTraffic, DownstreamTraffic, TrafficSize, DomainName, Url, FileName, id);
             return dpi;
         } catch (Exception e) {
             LOG.error("Parse origin dpi json error! Log contents: " + log.toString());

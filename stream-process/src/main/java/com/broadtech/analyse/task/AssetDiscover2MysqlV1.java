@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description  资产发现数据kafka2mysql
  * @date 2020-05-28 13:54
  */

@@ -5,7 +5,7 @@ import java.util.Properties
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 测试发送批量数据时使用
  * @date 2020-06-05 10:51
  */

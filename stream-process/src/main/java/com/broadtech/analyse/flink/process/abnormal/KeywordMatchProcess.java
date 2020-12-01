@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 关键字匹配
  * @date 2020-08-21 14:46
  */
@@ -55,6 +55,7 @@ public class KeywordMatchProcess extends ProcessFunction<Dpi, AlarmResult> {
     private String userName;
     private String password;
     private String keyword;
+
     public KeywordMatchProcess(String jdbcUrl, String userName, String password, String keyword) {
         this.jdbcUrl = jdbcUrl;
         this.userName = userName;
@@ -73,43 +74,46 @@ public class KeywordMatchProcess extends ProcessFunction<Dpi, AlarmResult> {
         ResultSet rs = ps1.executeQuery();
 
         String lastDate = "";
-        while (rs.next()){
+        while (rs.next()) {
             lastDate = rs.getString("last_date").trim();
         }
-        if("".equals(lastDate)){
+        if ("".equals(lastDate)) {
             String currentDate = TimeUtils.getCurrentDate("yyyyMMdd");
             lastDate = TimeUtils.getPreDate(currentDate, 1);
         }
 
-        String sql2 = "select labels from threat_indicator where time='" + lastDate + "' limit 10";//todo  从威胁情报库里读取数据
+
+        LOG.info("========== Last date is: " + lastDate + "===========");
+        System.out.println("========== Last date is: " + lastDate + "===========");
+        String sql2 = "select labels from threat_indicator where time='" + lastDate + "'" ;//todo  从威胁情报库里读取数据
         ps2 = connection.prepareStatement(sql2);
         ResultSet rs2 = ps2.executeQuery();
         while (rs2.next()) {
             String labels = rs2.getString("labels");
             JSONArray jsonArray = JSON.parseArray(labels);
-            for(int i=0; i< jsonArray.size();i++){
+            for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject threatIntelligenceObj = jsonArray.getJSONObject(i);
                 String geo = threatIntelligenceObj.getString("geo");
                 String type = threatIntelligenceObj.getString("type");
                 String value = threatIntelligenceObj.getString("value");
                 String reputation = threatIntelligenceObj.getString("reputation");
                 //ipv4
-                if(ThreatIntelligenceType.FEED_IPV4.value.equals(type)){
+                if (ThreatIntelligenceType.FEED_IPV4.value.equals(type)) {
                     ip4Map.put(value, new ThreatIntelligence(geo, reputation, type, value));
                 }
-                if(ThreatIntelligenceType.FEED_DOMAIN.value.equals(type)){
+                if (ThreatIntelligenceType.FEED_DOMAIN.value.equals(type)) {
                     domainMap.put(value, new ThreatIntelligence(geo, reputation, type, value));
                 }
-                if(ThreatIntelligenceType.FEED_URL.value.equals(type)){
+                if (ThreatIntelligenceType.FEED_URL.value.equals(type)) {
                     urlMap.put(value, new ThreatIntelligence(geo, reputation, type, value));
                 }
-                if(ThreatIntelligenceType.FEED_HASH_SHA1.value.equals(type)){
+                if (ThreatIntelligenceType.FEED_HASH_SHA1.value.equals(type)) {
                     hashSha1Map.put(value, new ThreatIntelligence(geo, reputation, type, value));
                 }
-                if(ThreatIntelligenceType.FEED_HASH_SHA256.value.equals(type)){
+                if (ThreatIntelligenceType.FEED_HASH_SHA256.value.equals(type)) {
                     hashSha256Map.put(value, new ThreatIntelligence(geo, reputation, type, value));
                 }
-                if(ThreatIntelligenceType.FEED_EMAIL.value.equals(type)){
+                if (ThreatIntelligenceType.FEED_EMAIL.value.equals(type)) {
                     emailMap.put(value, new ThreatIntelligence(geo, reputation, type, value));
                 }
 
@@ -118,21 +122,19 @@ public class KeywordMatchProcess extends ProcessFunction<Dpi, AlarmResult> {
     }
 
 
-
     @Override
     public void processElement(Dpi dpi, Context ctx, Collector<AlarmResult> alarmResultCollector) throws Exception {
         //1、关键字匹配
         List<String> keywords = Arrays.asList(keyword.split(","));
         String fileName = dpi.getFileName();
-        for(String kw: keywords){
-            if(fileName.contains(kw)){
+        for (String kw : keywords) {
+            if (fileName.contains(kw)) {
                 AlarmResult alarmResult = new AlarmResult(dpi.getSrcIPAddress(), dpi.getDestIPAddress(), "", "", dpi.getTrafficSize(), dpi.getFileName(),
-                        keyword, "", "", "", 2);
+                        keyword, "", "", "", AlarmType.SUSPICIOUS.value, dpi.getId());
                 alarmResultCollector.collect(alarmResult);
                 break;
             }
         }
-
         //2、威胁情报库匹配
         String srcIPAddress = dpi.getSrcIPAddress();
         String destIPAddress = dpi.getDestIPAddress();
@@ -146,24 +148,26 @@ public class KeywordMatchProcess extends ProcessFunction<Dpi, AlarmResult> {
 
     /**
      * 威胁情报关联分析
+     *
      * @param dpi
      * @param out
      * @param intelligenceMap
      * @param sourceKey
      */
-    public void processIntelligence(Dpi dpi, Collector<AlarmResult> out, Map<String, ThreatIntelligence> intelligenceMap, String sourceKey){
+    public void processIntelligence(Dpi dpi, Collector<AlarmResult> out, Map<String, ThreatIntelligence> intelligenceMap, String sourceKey) {
+        String traceIds = dpi.getId();
         ThreatIntelligence srcipaddressThreatIntelligence = intelligenceMap.getOrDefault(sourceKey, null);
-        if(srcipaddressThreatIntelligence != null){
+        if (srcipaddressThreatIntelligence != null) {
             String geo = srcipaddressThreatIntelligence.getGeo();
             String reputation = srcipaddressThreatIntelligence.getReputation();
             JSONArray reputations = JSON.parseArray(reputation);
 
-            for(int i=0;i<reputations.size();i++){
+            for (int i = 0; i < reputations.size(); i++) {
                 JSONObject reputationsJSONObject = reputations.getJSONObject(i);
                 String score = reputationsJSONObject.getString("score");
                 String category = reputationsJSONObject.getString("category");
                 AlarmResult alarmResult = new AlarmResult(dpi.getSrcIPAddress(), dpi.getDestIPAddress(), "", "", dpi.getTrafficSize(), dpi.getFileName(),
-                        keyword, geo, category, score, AlarmType.SUSPICIOUS.value);
+                        keyword, geo, category, score, AlarmType.SUSPICIOUS.value, traceIds);
                 out.collect(alarmResult);
             }
         }

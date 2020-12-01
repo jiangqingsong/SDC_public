@@ -1,7 +1,7 @@
 package com.broadtech.analyse.constants.asset;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 资产发现常量类
  * @date 2020-06-04 13:44
  */

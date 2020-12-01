@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 自定义kafka to mysql,继承TwoPhaseCommitSinkFunction,实现两阶段提交
  * @date 2020-05-28 14:19
  */

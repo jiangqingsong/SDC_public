@@ -13,7 +13,7 @@ import org.apache.flink.util.Collector;
 
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 布隆过滤器demo
  * @date 2020-06-02 13:44
  */

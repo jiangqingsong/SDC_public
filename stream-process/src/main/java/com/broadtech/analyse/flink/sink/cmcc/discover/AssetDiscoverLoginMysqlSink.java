@@ -27,7 +27,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Agent采集资产数据mysql
  * @date 2020-05-28 15:37
  */

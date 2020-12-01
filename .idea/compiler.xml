@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="USE_RELEASE_OPTION" value="false" />
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="date-share" />
+        <module name="dataProcess" />
+        <module name="api_test" />
+        <module name="stream-etl" />
+        <module name="stream-process" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="8">
+      <module name="api" target="1.8" />
+      <module name="common" target="8" />
+      <module name="demo (1) (com.sdc.api_test)" target="1.8" />
+      <module name="realtimeProcess" target="8" />
+      <module name="SituationAwareness" target="1.5" />
+      <module name="stream-table" target="8" />
+      <module name="SyslogTest" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api" options="-parameters" />
+      <module name="api_test" options="-parameters" />
+      <module name="date-share" options="-parameters" />
+      <module name="demo (1) (com.sdc.api_test)" options="-parameters" />
+    </option>
+  </component>
+</project>

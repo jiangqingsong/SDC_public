@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description  ip归属解析
  * @date 2020-06-07 11:24
  */

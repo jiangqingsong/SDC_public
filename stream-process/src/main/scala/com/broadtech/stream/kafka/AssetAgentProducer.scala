@@ -6,18 +6,19 @@ import com.alibaba.fastjson.JSON
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 测试发送批量数据时使用
  * @date 2020-06-05 10:51
  */
 
-object AssetAgentProducer {
+object AssetAgentProducer { 
   def main(args: Array[String]): Unit = {
-    writeToKafka("test002")
+    writeToKafka("test1030")
   }
 
   def writeToKafka(topic: String): Unit = {
     val properties = new Properties()
+    //properties.setProperty("bootstrap.servers", "localhost:19092")
     properties.setProperty("bootstrap.servers", "master01:9092")
     properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
     properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
@@ -33,7 +34,7 @@ object AssetAgentProducer {
         println(line)
         producer.send(record)
       }
-      Thread.sleep(5000)
+      Thread.sleep(1000)
     }
 
     producer.close()

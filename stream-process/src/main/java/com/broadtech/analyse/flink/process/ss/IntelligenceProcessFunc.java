@@ -8,6 +8,7 @@ import com.broadtech.analyse.pojo.ss.SecurityLog;
 import com.broadtech.analyse.pojo.ss.ThreatIntelligence;
 import com.broadtech.analyse.pojo.ss.ThreatIntelligence2;
 import com.broadtech.analyse.pojo.ss.ThreatIntelligenceMaps;
+import com.broadtech.analyse.util.VulnerabilityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.state.BroadcastState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -31,7 +32,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description 情报库、漏洞库关联分析
  * @date 2020-08-10 15:28
  */
@@ -60,7 +61,7 @@ public class IntelligenceProcessFunc extends BroadcastProcessFunction<Tuple3<Sec
     private String password;
     private Timer timer;
 
-    private Map<String, Vulnerability> valnerabilityMap;
+    private Map<String, Vulnerability> vulnerabilityMap;
     public IntelligenceProcessFunc(String jdbcUrl, String userName, String password) {
         this.jdbcUrl = jdbcUrl;
         this.userName = userName;
@@ -70,7 +71,7 @@ public class IntelligenceProcessFunc extends BroadcastProcessFunction<Tuple3<Sec
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
-        valnerabilityMap = new HashMap<>();
+        vulnerabilityMap = new HashMap<>();
         //开启一个定时任务，定期更新配置数据
         timer = new Timer(true);
         timer.schedule(new TimerTask() {
@@ -130,13 +131,23 @@ public class IntelligenceProcessFunc extends BroadcastProcessFunction<Tuple3<Sec
                 vulnerability.setSubmittime(submittime);
                 vulnerability.setTitle(title);
                 vulnerability.setProduct(product);
-                valnerabilityMap.put(product, vulnerability);
+                vulnerabilityMap.put(product, vulnerability);
             }
-            LOG.info("====== valnerabilityMap size ======" + valnerabilityMap.size());
+            LOG.info("====== valnerabilityMap size ======" + vulnerabilityMap.size());
         }
 
     }
 
+    /**
+     * 威胁情报碰撞目前支持：
+     * 1、url
+     * 2、ip
+     * 3、email
+     * @param value
+     * @param ctx
+     * @param out
+     * @throws Exception
+     */
     @Override
     public void processElement(Tuple3<SecurityLog, Integer, Long> value, ReadOnlyContext ctx, Collector<Tuple5<SecurityLog, Integer, Long, String, ThreatIntelligence2>> out) throws Exception {
 
@@ -156,11 +167,11 @@ public class IntelligenceProcessFunc extends BroadcastProcessFunction<Tuple3<Sec
         String softwarename = securityLog.getSoftwarename();
         String softwareversion = securityLog.getSoftwareversion();
 
-        Set<String> products = valnerabilityMap.keySet();
+        Set<String> products = vulnerabilityMap.keySet();
         Set<String> matchedVulnerabilitySet = new HashSet<>();
         for(String product: products){
             if(product.contains(softwarename)){
-                matchedVulnerabilitySet.add(valnerabilityMap.get(product).getNumber());
+                matchedVulnerabilitySet.add(vulnerabilityMap.get(product).getNumber());
                 break;//随机匹配一条漏洞
             }
         }
@@ -178,10 +189,10 @@ public class IntelligenceProcessFunc extends BroadcastProcessFunction<Tuple3<Sec
         //processIntelligence(securityLog, count, out, domainMap, xxx);
 
         //url
-        //processIntelligence(securityLog, count, out, urlMap, xxx);
+        processIntelligence(securityLog, count, windowEnd, number, out, urlMap, securityLog.getUrl());
 
         //email
-        //processIntelligence(securityLog, count, out, emailMap, xxx);
+        processIntelligence(securityLog, count, windowEnd, number, out, emailMap, securityLog.getMail());
 
         //md5
         //processIntelligence(securityLog, count, out, hashMd5Map, xxx);
@@ -233,5 +244,6 @@ public class IntelligenceProcessFunc extends BroadcastProcessFunction<Tuple3<Sec
         this.hashSha1Map = value.getHashSha1Map();
         this.hashSha256Map = value.getHashSha256Map();
         System.out.println("-------------- Load Threat Data Success！----------------");
+        LOG.info("-------------- Load Threat Data Success！----------------");
     }
 }

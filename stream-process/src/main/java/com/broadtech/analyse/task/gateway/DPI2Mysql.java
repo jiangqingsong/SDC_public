@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description  1、从kafka读取DPI数据  2、sink到mysql
  * @date 2020-05-28 13:54
  */

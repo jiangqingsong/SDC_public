@@ -1,8 +1,7 @@
 package com.broadtech.analyse.flink.sink.cmcc;
 
-import com.alibaba.fastjson.JSON;
+import com.broadtech.analyse.constants.asset.AssetConstants;
 import com.broadtech.analyse.pojo.cmcc.AssetAgentOrigin;
-import com.broadtech.analyse.util.KafkaUtils;
 import com.broadtech.analyse.util.TimeUtils;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description Agent采集资产数据mysql
  * @date 2020-05-28 15:37
  */
@@ -51,7 +50,6 @@ public class AssetAgentWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<
      */
     @Override
     public void open(Configuration parameters) throws Exception {
-        //kafka producer
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", broker);
         properties.setProperty("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
@@ -59,14 +57,6 @@ public class AssetAgentWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<
         producer = new KafkaProducer<>(properties);
 
         super.open(parameters);
-        /*dataSource = new BasicDataSource();
-        connection = getCon(dataSource);
-        String sql = "insert into  " + sinkTable + "(resource_name,task_id,asset_id," +
-                "scan_time,device_name,device_type,device_ip_address,os_info,patch_properties,kernel_version," +
-                "open_service_of_port,program_info,message_oriented_middleware,data_base_info" +
-                ",vulnerability_number)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-        ps = this.connection.prepareStatement(sql);*/
     }
 
     @Override
@@ -84,23 +74,20 @@ public class AssetAgentWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<
     public void addBatch(Tuple2<AssetAgentOrigin, String> tuple) throws SQLException {
         AssetAgentOrigin agent = tuple.f0;
         String number = tuple.f1;
-        ps.setString(1, agent.getResourceName());
-        ps.setString(2, agent.getTaskID());
-        ps.setString(3, agent.getAssetID());
-        ps.setString(4, agent.getScanTime());
-        ps.setString(5, agent.getDeviceName());
-        ps.setString(6, agent.getDeviceType());
-        ps.setString(7, JSON.toJSONString(agent.getDeviceIpAddresss()));//String
-        ps.setString(8, agent.getOSInfo());
-        ps.setString(9, JSON.toJSONString(agent.getPatchProperties()));//String
-        ps.setString(10, agent.getKernelVersion());
-        ps.setString(11, JSON.toJSONString(agent.getOpenServiceOfPorts()));//Integer
-        ps.setString(12, JSON.toJSONString(agent.getProgramInfos()));
-        ps.setString(13, JSON.toJSONString(agent.getMessageOrientedMiddlewares()));
-        ps.setString(14, JSON.toJSONString(agent.getDataBaseInfos()));
-        //number
-        ps.setString(15, number);
-        ps.addBatch();
+
+        List<String> deviceIpAddresss = agent.getDeviceIpAddresss();
+        String[] numbers = number.split(",");
+        for(String ip: deviceIpAddresss){
+            for(int i=0;i<numbers.length;i++){
+                ps.setString(1, ip);
+                ps.setString(2, numbers[i]);
+                ps.setString(3, "");//没有绿盟的漏洞信息
+                ps.setInt(4, 1);//1代表漏洞来源CNVD
+                ps.setString(5, TimeUtils.convertTimestamp2Date(System.currentTimeMillis(), "yyyy-MM-dd hh:mm:ss"));//1代表漏洞来源CNVD
+                ps.addBatch();
+            }
+        }
+
     }
 
     /**
@@ -112,11 +99,12 @@ public class AssetAgentWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<
     public void invoke(List<Tuple2<AssetAgentOrigin, String>> tuples, Context context) throws Exception {
         dataSource = new BasicDataSource();
         connection = getCon(dataSource);
-        String sql = "insert into  " + sinkTable + "(resource_name,task_id,asset_id," +
+        /*String sql = "insert into  " + sinkTable + "(resource_name,task_id,asset_id," +
                 "scan_time,device_name,device_type,device_ip_address,os_info,patch_properties,kernel_version," +
                 "open_service_of_port,program_info,message_oriented_middleware,data_base_info" +
                 ",vulnerability_number)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";*/
+        String sql = "insert into " + AssetConstants.TAB_NAME_LVULNERABILITY + "(ip, cnvd_number, lm_number, source, insert_time)values(?,?,?,?,?);";
         ps = this.connection.prepareStatement(sql);
         //遍历数据集合
         for (Tuple2<AssetAgentOrigin, String> tuple : tuples) {
@@ -134,7 +122,7 @@ public class AssetAgentWithVulnerMysqlSink extends RichSinkFunction<List<Tuple2<
         }
         try {
             int[] count = ps.executeBatch();//批量后执行
-            LOG.info(sinkTable + ": 成功了插入了" + count.length + "行数据");
+            LOG.info(AssetConstants.TAB_NAME_LVULNERABILITY + "(agent): 成功了插入了" + count.length + "行数据");
 
         }catch (Exception e){
             LOG.error(e.getMessage(), e);

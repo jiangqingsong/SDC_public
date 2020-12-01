@@ -3,7 +3,7 @@ package com.broadtech.analyse.pojo.cmcc.find;
 import java.util.List;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description login 资产发现
  * @date 2020-06-12 19:15
  */

@@ -4,7 +4,7 @@ import com.broadtech.analyse.pojo.ss.SecurityLog;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
- * @author jiangqingsong
+ * @author leo.J
  * @description
  * @date 2020-08-17 15:15
  */

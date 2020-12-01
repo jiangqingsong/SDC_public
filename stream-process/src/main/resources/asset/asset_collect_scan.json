@@ -1,0 +1,48 @@
+{
+  "ResourceName": "HostInfo",
+  "TaskID": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "ScanTime": "2020-5-19 15:10:10",
+  "ResourceInfo": {
+    "DeviceIPAddress": "192.168.100.12",
+    "IPAddressOwnership": "chongqing",
+    "DeviceType": "msrpc",
+    "OSInfo": "ubuntu16.04",
+    "SystemFingerprintInfo": "xxxxxxxx",
+    "Running": "mysql",
+    "OpenServiceOfPort": [{
+      "Name": "FTP",
+      "Port": 21,
+      "Version": "2.2.0"
+    }, {
+      "Name": "SSH",
+      "Port": 22,
+      "Version": "1.2.11"
+    }, {
+      "Name": "Telnet",
+      "Port": 23,
+      "Version": "3.2.2"
+    }, {
+      "Name": "Http",
+      "Port": 80,
+      "Version": "10.1.1"
+    }],
+    "MessageOrientedMiddleware": [{
+      "Name": "kafka",
+      "Version": "1.2.1",
+      "Port": 9092
+    }, {
+      "Name": "Tomcat",
+      "Version": "9.0.6",
+      "Port": 8080
+    }],
+    "DataBaseInfo": [{
+      "Name": "mysql",
+      "Version": "8.0.20",
+      "Port": 3306
+    }, {
+      "Name": "oracle",
+      "Version": "12.2.0.3",
+      "Port": 1521
+    }]
+  }
+}
